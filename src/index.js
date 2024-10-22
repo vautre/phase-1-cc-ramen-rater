@@ -5,68 +5,78 @@
 // const foodTitle = document.createElement("h2")
 // const foodDesc = document.createElement("p")
 
-console.log(
-  'hiiiiiiiii'
-);
-
-
-async function submitNewRamen(newRamen) {
-  console.log(newRamen)
-}
-
-addRamen()
-
 async function ramenList() {
   const response = await fetch("http://localhost:3000/ramens")
   const ramens = await response.json()
   console.log(ramens)
 
-  const ramenMenu = document.querySelector("#ramen-menu")
-  const ramenDiv = document.createElement("div")
-  const ramenImg = document.createElement("img")
-  ramenDiv.src = ramens.image     // SET THE IMAGE SOURCE
-  ramenDiv.appendChild(ramenImg)
+  ramens.forEach(ramen => {           // THIS RAMEN IS A FILLER WORD
+    const ramenMenu = document.querySelector("#ramen-menu")
+    const ramenImg = document.createElement("img")
+    ramenImg.src = ramen.image     // SET THE IMAGE SOURCE
+    
+    ramenMenu.appendChild(ramenImg) // APPEND IMAGE TO RAMEN MENU (RAMEN-MENU DIV)
 
-  const ramenName = document.createElement("h3");
-  ramenName.textContent = ramens.name; // Display the name
-  ramenDiv.appendChild(ramenName);
-
-  const ramenRest = document.createElement("p");
-  ramenRest.textContent = ramens.restaurant; // Display the restaurant
-  ramenDiv.appendChild(ramenRest);
-
-  const ramenRating = document.createElement("p");
-  ramenRating.textContent = `Rating: ${ramens.rating}`; // Display the rating
-  ramenDiv.appendChild(ramenRating);
-
-  const ramenComment = document.createElement("p");
-  ramenComment.textContent = ramens.comment; // Display the comment
-  ramenDiv.appendChild(ramenComment);
-
-  ramenMenu.append(ramenDiv)
-  console.log("hi")
+    ramenImg.addEventListener("click", () => handleClickOnRamen(ramen))   // EVENT LISTENER TO HANDLE CLICKING ON RAMEN IMG
+  })
 }
 
-function addRamen() {
-  const newName = document.getElementById("new-name").value
-  const newRest = document.getElementById("new-restaurant").value
-  const newImage = document.getElementById("new-image").value
-  const newRating = document.getElementById("new-rating").value
-  const newComment = document.getElementById("new-comment").value
+function handleClickOnRamen(ramen) {    // FUNCTION TO DISPLAY RAMEN DETAILS WHEN IMG IS CLICKED
+  console.log(ramen)    // for debugging
+  const mainImg = document.querySelector(".detail-image")
+  mainImg.src = ramen.image
+
+  const ramenName = document.querySelector(".name")
+  ramenName.textContent = ramen.name
+
+  const ramenRest = document.querySelector(".restaurant")
+  ramenRest.textContent = ramen.restaurant
+
+  const ratingDisplay = document.querySelector("#rating-display")
+  ratingDisplay.textContent = ramen.rating
+
+  const commentDisplay = document.querySelector("#comment-display")
+  commentDisplay.textContent = ramen.comment
+}
+
+function addRamen() {   // FUNCTION TO HANDLE NEW RAMEN SUBMISSION
   const submitButton = document.getElementById("submit-button")
 
-  const newRamen = {
+  submitButton.addEventListener("click", async () => {   // COLLECT THE INPUTS VALUES WHEN SUBMIT IS CLICKED
+    const newName = document.getElementById("new-name").value
+    const newRest = document.getElementById("new-restaurant").value
+    const newImage = document.getElementById("new-image").value
+    const newRating = document.getElementById("new-rating").value
+    const newComment = document.getElementById("new-comment").value
+  
+    const newRamen = {
       "name": newName,
       "restaurant": newRest,
       "image": newImage,
       "rating": newRating,
-      "comment": newComment
+      "comment": newComment,
   }
-  submitButton.addEventListener("click", () => submitNewRamen(newRamen))
-  console.log(newComment) 
+  
+await submitNewRamen(newRamen)    // CALL THE FUNCTION TO HANDLE NEW RAMEN
+
+console.log(newRamen);
+})
 }
 
-ramenList()
+async function submitNewRamen(newRamen) {
+  const response = await fetch("http://localhost:3000/ramens", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(newRamen),
+  });
+  return response.json(); 
+}
+
+ramenList()   // INITALIZE RAMEN LIST WHEN PAGE LOADS
+addRamen()    // INITALIZE ADDRAMEN FUNCTION FOR NEW RAMEN INPUT
+
 
 
 // function displayRamen() {
